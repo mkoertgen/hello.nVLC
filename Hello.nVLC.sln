@@ -7,6 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hello.nVLC", "Hello.nVLC\He
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AB0CB739-6E2A-45EE-85E3-71E5A965A94D}"
 	ProjectSection(SolutionItems) = preProject
+		hello.nVLC.png = hello.nVLC.png
 		README.md = README.md
 	EndProjectSection
 EndProject

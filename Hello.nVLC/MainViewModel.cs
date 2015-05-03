@@ -16,7 +16,7 @@ namespace Hello.nVLC
             Player = player;
 
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DisplayName = "Hello Media Player";
+            DisplayName = "hello.nVLC";
         }
 
         public IPlayerViewModel Player { get; private set; }
