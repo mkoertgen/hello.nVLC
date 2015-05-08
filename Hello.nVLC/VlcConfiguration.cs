@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using LibVlcWrapper;
 using Microsoft.Win32;
 
 namespace Hello.nVLC
@@ -27,7 +26,8 @@ namespace Hello.nVLC
             get
             {
                 if (_libVlcVersion != null) return _libVlcVersion;
-                var pStr = LibVlcMethods.libvlc_get_version();
+                // This uses nVLC, cf.: https://www.nuget.org/packages/nVLC/
+                var pStr = LibVlcWrapper.LibVlcMethods.libvlc_get_version();
                 _libVlcVersion = Marshal.PtrToStringAnsi(pStr);
                 return _libVlcVersion;
             }
@@ -58,7 +58,7 @@ namespace Hello.nVLC
 
             // Prepend native path to environment path, to ensure the right libs are being used.
             var path = Environment.GetEnvironmentVariable("PATH");
-            path = String.Concat(nativePath, ";", path);
+            path = string.Concat(nativePath, ";", path);
             Environment.SetEnvironmentVariable("PATH", path);
 
             Trace.TraceInformation("Using VLC {0} {1} from {2}",
@@ -70,11 +70,9 @@ namespace Hello.nVLC
         private static string GetDefaultHomePath()
         {
             var homePath = GetSafeEnv("VLC_HOME");
-            if (String.IsNullOrWhiteSpace(homePath))
-            {
-                var executingAssemblyFile = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath;
-                homePath = Path.GetDirectoryName(executingAssemblyFile);
-            }
+            if (!string.IsNullOrWhiteSpace(homePath)) return homePath;
+            var executingAssemblyFile = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath;
+            homePath = Path.GetDirectoryName(executingAssemblyFile);
             return homePath;
         }
 
@@ -86,13 +84,13 @@ namespace Hello.nVLC
         private static string GetSafeEnv(string envVar)
         {
             var value = Environment.GetEnvironmentVariable(envVar);
-            if (String.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                value = (String)Registry.GetValue(UserEnvRegKey, envVar, null);
-                if (String.IsNullOrWhiteSpace(value))
-                    value = (String)Registry.GetValue(SystemEnvRegKey, envVar, null);
+                value = (string)Registry.GetValue(UserEnvRegKey, envVar, null);
+                if (string.IsNullOrWhiteSpace(value))
+                    value = (string)Registry.GetValue(SystemEnvRegKey, envVar, null);
             }
-            return value ?? String.Empty;
+            return value ?? string.Empty;
         }
     }
 }
