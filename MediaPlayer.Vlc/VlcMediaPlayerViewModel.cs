@@ -198,7 +198,6 @@ namespace MediaPlayer.Vlc
                 }
                 return _volume;
             }
-
             set
             {
                 if (Math.Abs(_volume - value) < VolumeEps) return;
