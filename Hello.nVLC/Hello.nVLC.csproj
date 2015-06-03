@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hello.nVLC</RootNamespace>
     <AssemblyName>Hello.nVLC</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <NuGetPackageImportStamp>49bbc6f4</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -77,26 +78,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BooleanConverter.cs" />
-    <Compile Include="BooleanToVisibilityConverter.cs" />
-    <Compile Include="FormattedSlider.cs" />
-    <Compile Include="Media\MediaException.cs" />
-    <Compile Include="Media\MediaNotFoundException.cs" />
-    <Compile Include="Media\MediaPlayerExtensions.cs" />
-    <Compile Include="Media\NoMediaException.cs" />
-    <Compile Include="Media\PlayerError.cs" />
-    <Compile Include="Media\IPlayerViewModel.cs" />
-    <Compile Include="Media\IPlayerError.cs" />
-    <Compile Include="Media\UriExtensions.cs" />
-    <Compile Include="Media\UriNotFoundException.cs" />
-    <Compile Include="Media\Vlc\VlcConfiguration.cs" />
-    <Compile Include="Media\Vlc\VlcPlayerViewModel.cs" />
-    <Compile Include="Media\Windows\MediaPlayerViewModel.cs" />
-    <Compile Include="Media\Windows\MediaPlayerView.xaml.cs">
-      <DependentUpon>MediaPlayerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SecondsToTimeConverter.cs" />
-    <Compile Include="VlcConfiguration.cs" />
     <Page Include="MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -110,20 +91,9 @@
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Media\Vlc\VlcPlayerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Media\Windows\MediaPlayerView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainViewModel.cs" />
-    <Compile Include="Media\Vlc\VlcPlayerView.xaml.cs">
-      <DependentUpon>VlcPlayerView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -136,6 +106,24 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CoreAudioApi\CoreAudioApi.csproj">
+      <Project>{923A3753-62DC-40BD-BCD8-01EA721CC4AC}</Project>
+      <Name>CoreAudioApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaPlayer.Vlc\MediaPlayer.Vlc.csproj">
+      <Project>{821c47de-3f17-4e70-9f60-304cbd4f3f32}</Project>
+      <Name>MediaPlayer.Vlc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaPlayer.Windows\MediaPlayer.Windows.csproj">
+      <Project>{b6778e34-3376-46d4-98af-54a7ae154bc5}</Project>
+      <Name>MediaPlayer.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaPlayer\MediaPlayer.csproj">
+      <Project>{6e958bd5-9222-41e5-8951-04672014e7ff}</Project>
+      <Name>MediaPlayer</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

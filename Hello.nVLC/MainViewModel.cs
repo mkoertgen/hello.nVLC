@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using Caliburn.Micro;
-using Hello.nVLC.Media;
+using MediaPlayer;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
 
@@ -12,14 +12,14 @@ namespace Hello.nVLC
     {
         public MainViewModel(IPlayerViewModel player)
         {
-            if (player == null) throw new ArgumentNullException("player");
+            if (player == null) throw new ArgumentNullException(nameof(player));
             Player = player;
 
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DisplayName = "hello.nVLC";
         }
 
-        public IPlayerViewModel Player { get; private set; }
+        public IPlayerViewModel Player { get; }
 
         // ReSharper disable once UnusedMember.Global
         public void OpenFile()
@@ -34,8 +34,8 @@ namespace Hello.nVLC
         // ReSharper disable once UnusedMember.Global
         public void OpenUrl()
         {
-            var url = Interaction.InputBox("Url", "Open Url", String.Empty);
-            if (!String.IsNullOrEmpty(url))
+            var url = Interaction.InputBox("Url", "Open Url", string.Empty);
+            if (!string.IsNullOrEmpty(url))
                 OpenUrl(url);
         }
 
