@@ -5,6 +5,17 @@ namespace CoreAudioApi
 {
     public static class BalanceExtensions
     {
+        // TODO: control via IAudioStreamVolume, IChannelAudioVolume, i.e.
+        //
+        // IAudioClient.GetService(REFIID id, out iface):
+        //
+        // - IAudioStreamVolume: https://msdn.microsoft.com/en-us/library/windows/desktop/dd370977(v=vs.85).aspx
+        //      IID_IAudioStreamVolume
+        //
+        // - IChannelAudioVolume: https://msdn.microsoft.com/en-us/library/windows/desktop/dd371023(v=vs.85).aspx
+        //      IID_IChannelAudioVolume
+        // -
+
         // left/right should be 0/1. But it varies. Try out for yourself!
         private const int LeftChan = 1;
         private const int RightChan = 0;

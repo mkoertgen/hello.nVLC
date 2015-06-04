@@ -92,9 +92,7 @@ namespace CoreAudioApi
         {
             CheckChannelIndex(index, "index");
 
-            if (level < 0.0f)
-                throw new ArgumentOutOfRangeException(nameof(level), "Volume must be between 0.0 and 1.0");
-            if (level > 1.0f)
+            if (level < 0f || level > 1f)
                 throw new ArgumentOutOfRangeException(nameof(level), "Volume must be between 0.0 and 1.0");
             unchecked
             {
