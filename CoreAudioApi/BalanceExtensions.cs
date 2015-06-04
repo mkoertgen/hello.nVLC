@@ -1,12 +1,13 @@
 ﻿using System;
+using CoreAudioApi.Interfaces;
 
 namespace CoreAudioApi
 {
     public static class BalanceExtensions
     {
-        // left=0, right=1
-        private const int LeftChan = 0;
-        private const int RightChan = 1;
+        // left/right should be 0/1. But it varies. Try out for yourself!
+        private const int LeftChan = 1;
+        private const int RightChan = 0;
 
         /// <summary>
         /// Gets the ratio of volume across the left and right speakers in a range between -1 (left) and 1 (right). The default is 0 (center).
@@ -17,22 +18,33 @@ namespace CoreAudioApi
         {
             VerifyChannels(volume);
 
-            var masterVol = volume.MasterVolumeLevelScalar;
+            var masterVol = Math.Max(1e-6f, volume.MasterVolumeLevelScalar);
+
             var leftVol = volume.Channels[LeftChan].VolumeLevelScalar;
             var rightVol = volume.Channels[RightChan].VolumeLevelScalar;
 
-            var balance = (rightVol - leftVol) / masterVol;
+            var balance = (rightVol - leftVol)/masterVol;
             return balance;
         }
 
         public static void SetBalance(this AudioEndpointVolume volume, float balance)
         {
+            VerifyChannels(volume);
+
+            var safeBalance = Math.Max(-1, Math.Min(1, balance));
             var masterVol = volume.MasterVolumeLevelScalar;
-            var rightVol = 1f + Math.Min(0f, balance);
-            var leftVol = 1f - Math.Max(0f, balance);
+            var rightVol = 1f + Math.Min(0f, safeBalance);
+            var leftVol = 1f - Math.Max(0f, safeBalance);
 
             volume.Channels[LeftChan].VolumeLevelScalar = leftVol * masterVol;
             volume.Channels[RightChan].VolumeLevelScalar = rightVol * masterVol;
+        }
+
+        public static AudioEndpointVolume GetDefaultVolumeEndpoint()
+        {
+            return new MMDeviceEnumerator()
+                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
+                .AudioEndpointVolume;
         }
 
         private static void VerifyChannels(AudioEndpointVolume volume)
