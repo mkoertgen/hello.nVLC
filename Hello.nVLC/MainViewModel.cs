@@ -34,7 +34,8 @@ namespace Hello.nVLC
         // ReSharper disable once UnusedMember.Global
         public void OpenUrl()
         {
-            var url = Interaction.InputBox("Url", "Open Url", string.Empty);
+            var url = Interaction.InputBox("Url", "Open Url", 
+                "https://archive.org/download/Windows7WildlifeSampleVideo/Wildlife_512kb.mp4");
             if (!string.IsNullOrEmpty(url))
                 OpenUrl(url);
         }
