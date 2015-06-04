@@ -41,7 +41,6 @@ namespace MediaPlayer.Windows
 
             var videoDrawing = new VideoDrawing {Player = _player, Rect = new Rect(0, 0, 1, 1)};
             VideoBrush = new DrawingBrush(videoDrawing);
-
         }
 
         void PlayerMediaOpened(object sender, EventArgs e)
@@ -49,14 +48,14 @@ namespace MediaPlayer.Windows
             Error.Exception = null;
 
             // ReSharper disable ExplicitCallerInfoArgument
-            OnPropertyChanged("Source");
-            OnPropertyChanged("Duration");
-            OnPropertyChanged("HasDuration");
-            OnPropertyChanged("CanPlay");
-            OnPropertyChanged("CanPause");
-            OnPropertyChanged("CanStop");
-            OnPropertyChanged("CanIncreaseSpeed");
-            OnPropertyChanged("CanDecreaseSpeed");
+            OnPropertyChanged(nameof(Source));
+            OnPropertyChanged(nameof(Duration));
+            OnPropertyChanged(nameof(HasDuration));
+            OnPropertyChanged(nameof(CanPlay));
+            OnPropertyChanged(nameof(CanPause));
+            OnPropertyChanged(nameof(CanStop));
+            OnPropertyChanged(nameof(CanIncreaseSpeed));
+            OnPropertyChanged(nameof(CanDecreaseSpeed));
             // ReSharper restore ExplicitCallerInfoArgument
         }
 
@@ -82,9 +81,9 @@ namespace MediaPlayer.Windows
                 _player.Volume = value;
                 OnPropertyChanged();
                 // ReSharper disable ExplicitCallerInfoArgument
-                OnPropertyChanged("CanMute");
-                OnPropertyChanged("CanUnMute");
-                OnPropertyChanged("IsMuted");
+                OnPropertyChanged(nameof(CanMute));
+                OnPropertyChanged(nameof(CanUnMute));
+                OnPropertyChanged(nameof(IsMuted));
                 // ReSharper restore ExplicitCallerInfoArgument
             }
         }
@@ -123,8 +122,8 @@ namespace MediaPlayer.Windows
                 _speedRatio = newValue;
                 OnPropertyChanged();
                 // ReSharper disable ExplicitCallerInfoArgument
-                OnPropertyChanged("CanIncreaseSpeed");
-                OnPropertyChanged("CanDecreaseSpeed");
+                OnPropertyChanged(nameof(CanIncreaseSpeed));
+                OnPropertyChanged(nameof(CanDecreaseSpeed));
                 // ReSharper restore ExplicitCallerInfoArgument
             }
         }
@@ -179,7 +178,7 @@ namespace MediaPlayer.Windows
                 _isPlaying = value;
                 OnPropertyChanged();
                 // ReSharper disable once ExplicitCallerInfoArgument
-                OnPropertyChanged("CanPlay");
+                OnPropertyChanged(nameof(CanPlay));
             }
         }
 
@@ -204,7 +203,7 @@ namespace MediaPlayer.Windows
                 _isPaused = value;
                 OnPropertyChanged();
                 // ReSharper disable once ExplicitCallerInfoArgument
-                OnPropertyChanged("CanPause");
+                OnPropertyChanged(nameof(CanPause));
             }
         }
 
@@ -230,7 +229,7 @@ namespace MediaPlayer.Windows
                 _isStopped = value;
                 OnPropertyChanged();
                 // ReSharper disable once ExplicitCallerInfoArgument
-                OnPropertyChanged("CanStop");
+                OnPropertyChanged(nameof(CanStop));
             }
         }
 
@@ -245,7 +244,7 @@ namespace MediaPlayer.Windows
         {
             if (!IsPlaying) return;
             // ReSharper disable once ExplicitCallerInfoArgument
-            OnPropertyChanged("Position");
+            OnPropertyChanged(nameof(Position));
         }
 
         private void HandleMediaFailedException(Exception exception)

@@ -23,14 +23,14 @@ namespace MediaPlayer
                 _exception = value;
                 OnPropertyChanged();
                 // ReSharper disable ExplicitCallerInfoArgument
-                OnPropertyChanged("HasException");
-                OnPropertyChanged("Message");
+                OnPropertyChanged(nameof(HasException));
+                OnPropertyChanged(nameof(Message));
                 // ReSharper restore ExplicitCallerInfoArgument
             }
         }
 
         public bool HasException => _exception != null;
-        public string Message => _exception != null ? _exception.Message : string.Empty;
+        public string Message => _exception?.Message ?? string.Empty;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate {};
 
