@@ -47,7 +47,6 @@
     <Compile Include="WindowsDisplayView.xaml.cs">
       <DependentUpon>WindowsDisplayView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowsModule.cs" />
     <Compile Include="WindowsDisplayViewModel.cs" />
     <Compile Include="WindowsMediaPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

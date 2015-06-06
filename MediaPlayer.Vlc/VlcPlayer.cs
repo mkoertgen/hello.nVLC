@@ -15,41 +15,30 @@ using NAudio.CoreAudioApi;
 namespace MediaPlayer.Vlc
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    public class VlcPlayerViewModel : IMediaPlayer, IDisposable
+    public class VlcPlayer : IMediaPlayer, IDisposable
     {
-        private readonly AudioEndpointVolume _audioEndpointVolume;
-        private const double MaxRate = 4;
-        private const double MinRate = 0.25;
         private const double RateDelta = 0.25;
-        private const double TimeEpsilon = 0.125;
-        private const double RateEpsilon = MinRate / 2;
-        public const double DefaultVolume = 1.0;
-        public const double VolumeEps = 0.05;
-        public const double BalanceEps = 0.05;
-
-        public double MaxSpeedRatio => MaxRate;
-        public double MinSpeedRatio => MinRate;
-        public double SpeedRatioDelta => RateDelta;
-
-        private readonly IMediaPlayerFactory _factory;
-        private readonly IVideoPlayer _player; // supports speedratio
+        private const double TimeEps = 0.125;
+        private const double RateEps = 0.125;
+        private const double DefaultVolume = 1.0;
+        private const double VolumeEps = 0.05;
+        private const double BalanceEps = 0.05;
+        private readonly AudioEndpointVolume _audioEndpointVolume;
         private readonly EventHandler<MediaDurationChange> _durationChanged;
+        private readonly IMediaPlayerFactory _factory;
         private readonly EventHandler<MediaParseChange> _parsedChanged;
-
-        private double _position;
-        private double _duration;
-        private double _speedRatio = 1.0;
-        private double _volume = DefaultVolume;
-        private double _restoreVolume = DefaultVolume;
+        private readonly IVideoPlayer _player;
         private double _balance = double.MinValue;
-
+        private double _duration;
         private IMedia _media;
-        private Uri _source;
-
         private PlayerState _playerState = PlayerState.Stopped;
-        private enum PlayerState { Stopped, Playing, Paused }
+        private double _position;
+        private double _rate = 1.0;
+        private double _restoreVolume = DefaultVolume;
+        private Uri _source;
+        private double _volume = DefaultVolume;
 
-        public VlcPlayerViewModel(IMediaPlayerFactory factory = null, AudioEndpointVolume audioEndpointVolume = null)
+        public VlcPlayer(IMediaPlayerFactory factory = null, AudioEndpointVolume audioEndpointVolume = null)
         {
             // create the player using the injected factory
             _factory = factory ?? new MediaPlayerFactory();
@@ -72,8 +61,32 @@ namespace MediaPlayer.Vlc
             _player.Events.PlayerLengthChanged += (s, e) => OnDurationChanged(e.NewLength);
             _player.Events.PlayerPaused += (s, e) => OnPaused();
             _player.Events.PlayerPlaying += (s, e) => OnPlaying();
-            _player.Events.PlayerPositionChanged += (s, e) => OnPositionChanged(e.NewPosition * Duration);
+            _player.Events.PlayerPositionChanged += (s, e) => OnPositionChanged(e.NewPosition*Duration);
             _player.Events.PlayerStopped += (s, e) => OnStopped();
+        }
+
+        public bool SupportsRate => true;
+        public double MaxRate => 4;
+        public double MinRate => 0.25;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public static AudioEndpointVolume GetVolumeEndpoint()
+        {
+            return new MMDeviceEnumerator()
+                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
+                .AudioEndpointVolume;
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private enum PlayerState
+        {
+            Stopped,
+            Playing,
+            Paused
         }
 
         #region Properties
@@ -81,7 +94,7 @@ namespace MediaPlayer.Vlc
         private TimeSpan OpenTimeOut { get; }
 
         /// <summary>
-        /// used to make he player for testing syncronously
+        ///     used to make he player for testing syncronously
         /// </summary>
         internal bool Async { private get; set; }
 
@@ -100,14 +113,25 @@ namespace MediaPlayer.Vlc
         public bool IsStopped => _playerState == PlayerState.Stopped;
 
         public bool CanMute => Volume > 0;
-        public void Mute() { _restoreVolume = Volume; Volume = 0.0; }
+
+        public void Mute()
+        {
+            _restoreVolume = Volume;
+            Volume = 0.0;
+        }
+
         public bool IsMuted => Volume < double.Epsilon;
 
         public bool CanUnMute => Volume < double.Epsilon;
-        public void UnMute() { Volume = _restoreVolume; }
 
-        public bool CanIncreaseSpeed => Source != null && SpeedRatio < MaxSpeedRatio;
-        public bool CanDecreaseSpeed => Source != null && SpeedRatio > MinSpeedRatio;
+        public void UnMute()
+        {
+            Volume = _restoreVolume;
+        }
+
+        public bool CanFaster => Source != null && Rate < MaxRate;
+        public bool CanSlower => Source != null && Rate > MinRate;
+        public bool SupportsBalance => _audioEndpointVolume != null;
 
         public Uri Source
         {
@@ -123,8 +147,8 @@ namespace MediaPlayer.Vlc
 
                     OnPropertyChanged();
                     // ReSharper disable ExplicitCallerInfoArgument
-                    OnPropertyChanged(nameof(CanIncreaseSpeed));
-                    OnPropertyChanged(nameof(CanDecreaseSpeed));
+                    OnPropertyChanged(nameof(CanFaster));
+                    OnPropertyChanged(nameof(CanSlower));
                     OnPropertyChanged(nameof(CanPlay));
                     OnPropertyChanged(nameof(CanPause));
                     OnPropertyChanged(nameof(CanStop));
@@ -144,14 +168,14 @@ namespace MediaPlayer.Vlc
         }
 
         /// <summary>
-        /// duration in seconds
+        ///     duration in seconds
         /// </summary>
         public double Duration
         {
             get { return _duration; }
             set
             {
-                if (CloseTo(_duration, value, TimeEpsilon)) return;
+                if (CloseTo(_duration, value, TimeEps)) return;
                 _duration = value;
 
                 OnPropertyChanged();
@@ -161,7 +185,7 @@ namespace MediaPlayer.Vlc
         }
 
         /// <summary>
-        /// position in seconds
+        ///     position in seconds
         /// </summary>
         public double Position
         {
@@ -169,8 +193,8 @@ namespace MediaPlayer.Vlc
             set
             {
                 // when playing this raises PositionChanged
-                if (!PositionCloseTo(_player.Position * Duration, value))
-                    _player.Position = (float)(value / Duration);
+                if (!PositionCloseTo(_player.Position*Duration, value))
+                    _player.Position = (float) (value/Duration);
 
                 // when not playing we need to raise it ourselves
                 if (!IsPlaying)
@@ -181,7 +205,7 @@ namespace MediaPlayer.Vlc
         }
 
         /// <summary>
-        /// volume between 0 and 1.
+        ///     volume between 0 and 1.
         /// </summary>
         /// <remarks>internally the volume is an integer between 0 and 100 (pecent)</remarks>
         public double Volume
@@ -192,7 +216,7 @@ namespace MediaPlayer.Vlc
                 var playerInitialized = playerVolume >= 0; // not -1
                 if (playerInitialized)
                 {
-                    var newVolume = (int)Math.Round(_volume * 100);
+                    var newVolume = (int) Math.Round(_volume*100);
                     if (newVolume != playerVolume)
                         _player.Volume = newVolume;
                 }
@@ -203,7 +227,7 @@ namespace MediaPlayer.Vlc
                 if (Math.Abs(_volume - value) < VolumeEps) return;
                 _volume = value;
 
-                var newVolume = (int)Math.Round(value * 100);
+                var newVolume = (int) Math.Round(value*100);
                 if (_player.Volume != newVolume)
                     _player.Volume = newVolume;
 
@@ -217,7 +241,7 @@ namespace MediaPlayer.Vlc
         }
 
         /// <summary>
-        /// balance setter is not implemented yet and getter always returns 0.
+        ///     balance setter is not implemented yet and getter always returns 0.
         /// </summary>
         public double Balance
         {
@@ -231,7 +255,7 @@ namespace MediaPlayer.Vlc
             {
                 if (Math.Abs(_balance - value) < BalanceEps) return;
                 _balance = value;
-                _audioEndpointVolume?.SetBalance((float)_balance);
+                _audioEndpointVolume?.SetBalance((float) _balance);
                 OnPropertyChanged();
             }
         }
@@ -243,23 +267,23 @@ namespace MediaPlayer.Vlc
         }
 
         /// <summary>
-        /// speed of the audio. 1 means "normal speed"
+        ///     speed of the audio. 1 means "normal speed"
         /// </summary>
         /// <remarks>this needs video player</remarks>
-        public double SpeedRatio
+        public double Rate
         {
-            get { return _speedRatio; }
+            get { return _rate; }
             set
             {
-                var newValue = Math.Max(MinSpeedRatio, Math.Min(MaxSpeedRatio, value));
-                if (CloseTo(_speedRatio, newValue, RateEpsilon)) return;
-                _player.PlaybackRate = (float)newValue;
-                _speedRatio = newValue;
+                var newValue = Math.Max(MinRate, Math.Min(MaxRate, value));
+                if (CloseTo(_rate, newValue, RateEps)) return;
+                _player.PlaybackRate = (float) newValue;
+                _rate = newValue;
 
                 OnPropertyChanged();
                 // ReSharper disable ExplicitCallerInfoArgument
-                OnPropertyChanged(nameof(CanIncreaseSpeed));
-                OnPropertyChanged(nameof(CanDecreaseSpeed));
+                OnPropertyChanged(nameof(CanFaster));
+                OnPropertyChanged(nameof(CanSlower));
                 // ReSharper restore ExplicitCallerInfoArgument
             }
         }
@@ -268,13 +292,23 @@ namespace MediaPlayer.Vlc
 
         #region Methods
 
-        public void IncreaseSpeed() { SpeedRatio += RateDelta; }
-        public void DecreaseSpeed() { SpeedRatio -= RateDelta; }
+        public void Faster()
+        {
+            Rate += RateDelta;
+        }
 
-        public void Play() { PlayWithTask(); }
+        public void Slower()
+        {
+            Rate -= RateDelta;
+        }
+
+        public void Play()
+        {
+            PlayWithTask();
+        }
 
         /// <summary>
-        /// play media and return a task -so it can be tested
+        ///     play media and return a task -so it can be tested
         /// </summary>
         internal Task PlayWithTask()
         {
@@ -362,7 +396,7 @@ namespace MediaPlayer.Vlc
 
         private void OnDurationChanged(long newLength)
         {
-            var durationInSeconds = (newLength / 1000.0);
+            var durationInSeconds = (newLength/1000.0);
             Duration = durationInSeconds;
             OnStateChanged();
         }
@@ -425,12 +459,13 @@ namespace MediaPlayer.Vlc
                 _player.Open(_media);
 
                 Position = 0.0;
-                SpeedRatio = 1.0;
+                Rate = 1.0;
             }
             catch (Exception ex)
             {
                 Trace.TraceWarning("Could not open source \"{0}\": {1}", source, ex);
-                throw new MediaNotFoundException(string.Format(CultureInfo.CurrentCulture, "Could not open audio \"{0}\"", source), ex);
+                throw new MediaNotFoundException(
+                    string.Format(CultureInfo.CurrentCulture, "Could not open audio \"{0}\"", source), ex);
             }
         }
 
@@ -466,7 +501,7 @@ namespace MediaPlayer.Vlc
         private bool PositionCloseTo(double a, double b)
         {
             // just to make sure we get close enough at high speed (streaming and variable length issues)
-            return CloseTo(a, b, Math.Max(TimeEpsilon * SpeedRatio, TimeEpsilon));
+            return CloseTo(a, b, Math.Max(TimeEps*Rate, TimeEps));
         }
 
         private static bool CloseTo(double a, double b, double epsilon)
@@ -493,18 +528,11 @@ namespace MediaPlayer.Vlc
         }
 
         // Disposable types implement a finalizer.
-        ~VlcPlayerViewModel()
+        ~VlcPlayer()
         {
             Dispose(false);
         }
 
         #endregion
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

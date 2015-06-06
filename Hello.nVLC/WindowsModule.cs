@@ -1,6 +1,9 @@
 ﻿using Autofac;
+using Caliburn.Micro;
+using MediaPlayer;
+using MediaPlayer.Windows;
 
-namespace MediaPlayer.Windows
+namespace Hello.nVLC
 {
     public class WindowsModule : Module
     {
@@ -12,6 +15,7 @@ namespace MediaPlayer.Windows
                 .SingleInstance();
 
             builder.RegisterType<WindowsDisplayViewModel>().As<IMediaDisplayViewModel>();
+            AssemblySource.Instance.Add(typeof (WindowsDisplayViewModel).Assembly);
         }
     }
 }

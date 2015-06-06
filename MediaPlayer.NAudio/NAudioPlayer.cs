@@ -4,28 +4,29 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace MediaPlayer.NAudio
 {
+    public class VolumeEventArgs : EventArgs
+    {
+        public float Position { get; set; }
+        public float[] MaxVolume { get; set; }
+    }
+
     public class NAudioPlayer : IMediaPlayer
     {
-        private const double MaxRate = 4;
-        private const double MinRate = 0.25;
         private const double RateDelta = 0.25;
-
-        public double MaxSpeedRatio => MaxRate;
-        public double MinSpeedRatio => MinRate;
-        public double SpeedRatioDelta => RateDelta;
-
         private const double DefaultVolume = 0.5;
-        private Uri _source;
+        private const double TimeEpsilon = 0.25;
         private readonly IWavePlayer _player;
-        private WaveProviderEx _waveProvider;
         private readonly DispatcherTimer _positionTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
-        private bool _isPlaying;
         private bool _isPaused;
+        private bool _isPlaying;
         private bool _isStopped;
         private double _restoreVolume = DefaultVolume;
+        private Uri _source;
+        private AudioStream _waveProvider;
 
         public NAudioPlayer(IWavePlayer wavePlayer = null)
         {
@@ -42,6 +43,9 @@ namespace MediaPlayer.NAudio
             Error = PlayerError.NoError;
         }
 
+        public bool SupportsRate => false;
+        public double MaxRate => 4;
+        public double MinRate => 0.25;
         public IPlayerError Error { get; }
 
         public void Play()
@@ -91,15 +95,6 @@ namespace MediaPlayer.NAudio
             }
         }
 
-        private void NotifyCanStates()
-        {
-            // ReSharper disable ExplicitCallerInfoArgument
-            OnPropertyChanged(nameof(CanPlay));
-            OnPropertyChanged(nameof(CanPause));
-            OnPropertyChanged(nameof(CanStop));
-            // ReSharper restore ExplicitCallerInfoArgument
-        }
-
         public void Stop()
         {
             _player.Stop();
@@ -125,12 +120,21 @@ namespace MediaPlayer.NAudio
             }
         }
 
-
         public bool CanMute => Volume > 0;
-        public void Mute() { _restoreVolume = Volume; Volume = 0.0; }
+
+        public void Mute()
+        {
+            _restoreVolume = Volume;
+            Volume = 0.0;
+        }
+
         public bool IsMuted => Volume < double.Epsilon;
         public bool CanUnMute => Volume < double.Epsilon;
-        public void UnMute() { Volume = _restoreVolume; }
+
+        public void UnMute()
+        {
+            Volume = _restoreVolume;
+        }
 
         public Uri Source
         {
@@ -157,21 +161,6 @@ namespace MediaPlayer.NAudio
             }
         }
 
-        private void Open(Uri uri)
-        {
-            try
-            {
-                if (uri != null)
-                {
-                    uri.VerifyUriExists();
-                    _waveProvider = new WaveProviderEx(uri);
-                    _player.Init(_waveProvider);
-                }
-                Error.Exception = null;
-            }
-            catch (Exception ex) { Error.Exception = new MediaException("Could not open audio", ex); }
-        }
-
         public double Position
         {
             get { return _waveProvider?.CurrentTime.TotalSeconds ?? 0.0; }
@@ -188,20 +177,24 @@ namespace MediaPlayer.NAudio
         public double Duration => _waveProvider?.TotalTime.TotalSeconds ?? 0.0;
         public bool HasDuration => Duration > 0.0;
 
-        public void IncreaseSpeed() { SpeedRatio += RateDelta; }
-        public void DecreaseSpeed() { SpeedRatio -= RateDelta; }
+        public void Faster()
+        {
+            Rate += RateDelta;
+        }
 
-#pragma warning disable
+        public void Slower()
+        {
+            Rate -= RateDelta;
+        }
+
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         // TODO: implement speed using SoundTouch/Practice#, cf.:
         // - https://code.google.com/p/practicesharp/ 
         // - http://www.surina.net/soundtouch/ 
-        public bool CanIncreaseSpeed => false && Source != null && SpeedRatio < MaxSpeedRatio;
-        public bool CanDecreaseSpeed => false && Source != null && SpeedRatio > MinSpeedRatio;
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-#pragma warning restore
+        public bool CanFaster => Source != null && Rate < MaxRate;
+        public bool CanSlower => Source != null && Rate > MinRate;
 
-        public double SpeedRatio
+        public double Rate
         {
             get { return 1.0; }
             set
@@ -216,7 +209,7 @@ namespace MediaPlayer.NAudio
             set
             {
                 if (_waveProvider == null) return;
-                _waveProvider.Volume = (float)value;
+                _waveProvider.Volume = (float) value;
                 OnPropertyChanged();
                 // ReSharper disable ExplicitCallerInfoArgument
                 OnPropertyChanged(nameof(CanMute));
@@ -226,19 +219,58 @@ namespace MediaPlayer.NAudio
             }
         }
 
+        public bool SupportsBalance => true;
+
         public double Balance
         {
             get { return _waveProvider?.Pan ?? 0.0; }
             set
             {
                 if (_waveProvider == null) return;
-                _waveProvider.Pan = (float)value;
+                _waveProvider.Pan = (float) value;
                 OnPropertyChanged();
             }
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler<VolumeEventArgs> MaxVolume;
+
+        private void NotifyCanStates()
+        {
+            // ReSharper disable ExplicitCallerInfoArgument
+            OnPropertyChanged(nameof(CanPlay));
+            OnPropertyChanged(nameof(CanPause));
+            OnPropertyChanged(nameof(CanStop));
+            // ReSharper restore ExplicitCallerInfoArgument
+        }
+
+        private void Open(Uri uri)
+        {
+            try
+            {
+                if (uri != null)
+                {
+                    uri.VerifyUriExists();
+                    _waveProvider = new AudioStream(uri);
+                    _player.Init(_waveProvider);
+                }
+                Error.Exception = null;
+            }
+            catch (Exception ex)
+            {
+                Error.Exception = new MediaException("Could not open audio", ex);
+            }
+        }
+
+        private void OnStreamVolume(object sender, StreamVolumeEventArgs e)
+        {
+            MaxVolume?.Invoke(sender, new VolumeEventArgs
+            {
+                Position = (float) _waveProvider.CurrentTime.TotalSeconds,
+                MaxVolume = e.MaxSampleValues
+            });
+        }
+
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -295,10 +327,9 @@ namespace MediaPlayer.NAudio
             OnPropertyChanged("Position");
         }
 
-        private const double TimeEpsilon = 0.25;
         private bool PositionCloseTo(double a, double b)
         {
-            return CloseTo(a, b, TimeEpsilon * SpeedRatio);
+            return CloseTo(a, b, TimeEpsilon*Rate);
         }
 
         private static bool CloseTo(double a, double b, double epsilon)

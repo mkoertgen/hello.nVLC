@@ -29,6 +29,5 @@ namespace MediaPlayer
                 player.Mute();
             }
         }
-
     }
 }

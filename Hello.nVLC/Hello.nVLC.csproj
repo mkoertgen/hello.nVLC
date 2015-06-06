@@ -56,6 +56,10 @@
       <HintPath>..\packages\FontAwesome.Sharp.4.2.3.0\lib\FontAwesome.Sharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nVLC">
       <HintPath>..\packages\nVLC.2.1.0.3\lib\net40\nVLC.dll</HintPath>
     </Reference>
@@ -82,7 +86,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="NAudioModule.cs" />
     <Compile Include="SecondsToTimeConverter.cs" />
+    <Compile Include="VlcModule.cs" />
+    <Compile Include="WindowsModule.cs" />
     <Page Include="MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -123,6 +130,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\MediaPlayer.NAudio\MediaPlayer.NAudio.csproj">
+      <Project>{510FF86D-893C-44D6-9871-BEF89DD39C24}</Project>
+      <Name>MediaPlayer.NAudio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaPlayer.Vlc\MediaPlayer.Vlc.csproj">
       <Project>{821c47de-3f17-4e70-9f60-304cbd4f3f32}</Project>
       <Name>MediaPlayer.Vlc</Name>

@@ -31,8 +31,7 @@ namespace MediaPlayer
 
         public bool HasException => _exception != null;
         public string Message => _exception?.Message ?? string.Empty;
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate {};
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

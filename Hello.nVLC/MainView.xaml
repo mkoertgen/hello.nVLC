@@ -3,22 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Window.Resources>
         <Style TargetType="Button">
-            <Setter Property="Margin" Value="4"/>
-            <Setter Property="Width" Value="80"/>
-            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Width" Value="80" />
+            <Setter Property="Height" Value="24" />
         </Style>
     </Window.Resources>
     <Grid Margin="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ContentControl x:Name="Player"/>
+        <ContentControl x:Name="Player" />
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
-            <Button x:Name="OpenFile" Content="Open file..."/>
-            <Button x:Name="OpenUrl" Content="Open URL..."/>
+            <Button x:Name="OpenFile" Content="Open file..." />
+            <Button x:Name="OpenUrl" Content="Open URL..." />
         </StackPanel>
     </Grid>
 </Window>

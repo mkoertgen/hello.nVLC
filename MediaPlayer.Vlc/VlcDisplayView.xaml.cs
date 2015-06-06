@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace MediaPlayer.Vlc
 {
@@ -8,7 +9,7 @@ namespace MediaPlayer.Vlc
         {
             InitializeComponent();
 
-            var panel = new Panel();
+            var panel = new Panel {BackColor = Color.Black};
             WindowsFormsHost.Child = panel;
 
             Loaded += (sender, args) =>

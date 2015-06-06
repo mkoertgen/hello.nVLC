@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace MediaPlayer.Vlc
 {
     [TestFixture]
-    class VolumeTests
+    internal class VolumeTests
     {
         private readonly MMDevice _device = BalanceExtensions.GetDefaultDevice();
 

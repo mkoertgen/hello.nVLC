@@ -24,7 +24,7 @@ namespace MediaPlayer
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            VerifyUriExists(uri, (int)timeOut.TotalMilliseconds);
+            VerifyUriExists(uri, (int) timeOut.TotalMilliseconds);
         }
 
         public static void VerifyUriExists(this Uri uri, int timeout = 15000)
@@ -53,7 +53,6 @@ namespace MediaPlayer
                     if (httpWebResponse != null)
                     {
                         VerifyHttpStatusOk(uri, httpWebResponse.StatusCode);
-                        return;
                     }
 
                     // TODO: other casts/checks?

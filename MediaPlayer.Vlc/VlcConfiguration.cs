@@ -9,13 +9,18 @@ using Microsoft.Win32;
 namespace MediaPlayer.Vlc
 {
     /// <summary>
-    /// Configuration class for VLC native dependencies
+    ///     Configuration class for VLC native dependencies
     /// </summary>
     public class VlcConfiguration
     {
+        private const string UserEnvRegKey = @"HKEY_CURRENT_USER\Environment";
+
+        private const string SystemEnvRegKey =
+            @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment";
+
+        private readonly string _homePath;
         private string _libVlcVersion;
         private bool _vlcChecked;
-        private readonly string _homePath;
 
         public VlcConfiguration(string homePath = null)
         {
@@ -45,7 +50,7 @@ namespace MediaPlayer.Vlc
                 throw new InvalidOperationException("Cannot find VLC directory.");
         }
 
-        void CheckVlc()
+        private void CheckVlc()
         {
             var vlcPath = Path.Combine(_homePath, "vlc");
             var nativePath = Path.Combine(vlcPath, GetPlatform());
@@ -79,19 +84,19 @@ namespace MediaPlayer.Vlc
             return homePath;
         }
 
-        private static string GetPlatform() { return Environment.Is64BitProcess ? "x64" : "x86"; }
-
-        private const string UserEnvRegKey = @"HKEY_CURRENT_USER\Environment";
-        private const string SystemEnvRegKey = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment";
+        private static string GetPlatform()
+        {
+            return Environment.Is64BitProcess ? "x64" : "x86";
+        }
 
         private static string GetSafeEnv(string envVar)
         {
             var value = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrWhiteSpace(value))
             {
-                value = (string)Registry.GetValue(UserEnvRegKey, envVar, null);
+                value = (string) Registry.GetValue(UserEnvRegKey, envVar, null);
                 if (string.IsNullOrWhiteSpace(value))
-                    value = (string)Registry.GetValue(SystemEnvRegKey, envVar, null);
+                    value = (string) Registry.GetValue(SystemEnvRegKey, envVar, null);
             }
             return value ?? string.Empty;
         }
