@@ -1,8 +1,8 @@
 ﻿namespace MediaPlayer.Windows
 {
-    public partial class MediaDisplayView
+    public partial class WindowsDisplayView
     {
-        public MediaDisplayView()
+        public WindowsDisplayView()
         {
             InitializeComponent();
         }

@@ -10,7 +10,7 @@ namespace Hello.nVLC
 {
     public class MainViewModel : Screen
     {
-        public MainViewModel(IMediaPlayer player)
+        public MainViewModel(IMediaPlayerViewModel player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             Player = player;
@@ -19,7 +19,7 @@ namespace Hello.nVLC
             DisplayName = "hello.nVLC";
         }
 
-        public IMediaPlayer Player { get; }
+        public IMediaPlayerViewModel Player { get; }
 
         // ReSharper disable once UnusedMember.Global
         public void OpenFile()
@@ -44,7 +44,7 @@ namespace Hello.nVLC
         {
             try
             {
-                Player.Source = new Uri(url);
+                Player.Player.Source = new Uri(url);
             }
             catch (Exception ex)
             {

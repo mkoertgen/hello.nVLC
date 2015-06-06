@@ -17,8 +17,8 @@ namespace MediaPlayer.Vlc
         // -
 
         // left/right should be 0/1. But it varies. Try out for yourself!
-        private const int LeftChan = 1;
-        private const int RightChan = 0;
+        private const int LeftChan = 0;
+        private const int RightChan = 1;
 
         private static MMDevice _device;
 

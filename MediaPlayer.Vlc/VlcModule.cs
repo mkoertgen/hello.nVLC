@@ -1,28 +1,25 @@
 using Autofac;
-using Caliburn.Micro;
 using NAudio.CoreAudioApi;
 
 namespace MediaPlayer.Vlc
 {
-    //[Export(typeof(IModule))]
     public class VlcModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
-            // uncomment to use Vlc
             builder.RegisterType<VlcPlayerViewModel>().As<IMediaPlayer>().SingleInstance();
+            builder.RegisterType<VlcDisplayViewModel>().As<IMediaDisplayViewModel>().SingleInstance();
+
+            builder.RegisterInstance(GetVolumeEndpoint()).SingleInstance();
+
             new VlcConfiguration().VerifyVlcPresent();
-            AssemblySource.Instance.Add(typeof(VlcPlayerViewModel).Assembly);
-            // register AudioEndPointVolume
-            builder.RegisterInstance(GetDefaultAudioEndpoint().AudioEndpointVolume).SingleInstance();
         }
 
-        private static MMDevice GetDefaultAudioEndpoint()
+        private static AudioEndpointVolume GetVolumeEndpoint()
         {
-            var deviceEnumerator = new MMDeviceEnumerator();
-            //foreach (var d in deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
-            //    Trace.TraceInformation($"device = {d}");
-            return deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            return new MMDeviceEnumerator()
+                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
+                .AudioEndpointVolume;
         }
     }
 }

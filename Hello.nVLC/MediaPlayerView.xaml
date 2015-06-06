@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:mediaPlayer="clr-namespace:MediaPlayer"
+             xmlns:local="clr-namespace:MediaPlayer"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance mediaPlayer:MediaPlayerViewModel.Player}">
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance local:MediaPlayerViewModel}">
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Key="ErrorText">
             <Setter Property="Foreground" Value="Red"/>
@@ -14,8 +15,8 @@
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
-        <mediaPlayer:BooleanToVisibilityConverter x:Key="BoolToVisible" True="Visible" False="Collapsed"/>
-        <mediaPlayer:BooleanToVisibilityConverter x:Key="InverseBoolToVisible" True="Collapsed" False="Visible"/>
+        <local:BooleanToVisibilityConverter x:Key="BoolToVisible" True="Visible" False="Collapsed"/>
+        <local:BooleanToVisibilityConverter x:Key="InverseBoolToVisible" True="Collapsed" False="Visible"/>
 
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="DarkBlue"/>
@@ -57,7 +58,7 @@
             <Setter Property="Margin" Value="4"/>
         </Style>
 
-        <mediaPlayer:SecondsToTimeConverter x:Key="SecondsToTime" />
+        <local:SecondsToTimeConverter x:Key="SecondsToTime" />
     </UserControl.Resources>
 
     <Grid>
@@ -67,23 +68,25 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <StackPanel Visibility="{Binding Error.HasException, Converter={StaticResource BoolToVisible}}"
+            <StackPanel DataContext="{Binding Player.Error}"
+                Visibility="{Binding HasException, Converter={StaticResource BoolToVisible}}"
                 Orientation="Vertical" >
-                <TextBlock Text="{Binding Error.Message}" Style="{StaticResource ErrorText}"/>
+                <TextBlock Text="{Binding Message}" Style="{StaticResource ErrorText}"/>
                 <Expander Header="Details" IsExpanded="False">
-                    <TextBlock Text="{Binding Error.Exception}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Exception}" TextWrapping="Wrap"/>
                 </Expander>
             </StackPanel>
 
-            <Grid Visibility="{Binding Error.HasException, Converter={StaticResource InverseBoolToVisible}}" Margin="4">
+            <Grid Visibility="{Binding Player.Error.HasException, Converter={StaticResource InverseBoolToVisible}}" Margin="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ContentControl x:Name="Display" />
+                <ContentControl cal:View.Model="{Binding Display}"
+                    VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
 
-                <mediaPlayer:FormattedSlider Grid.Row="1"
+                <local:FormattedSlider Grid.Row="1" DataContext="{Binding Player}"
                 IsEnabled="{Binding HasDuration}" IsMoveToPointEnabled="True"
                 Value="{Binding Position}" Maximum="{Binding Duration}"
                 TickPlacement="BottomRight" TickFrequency="5"
@@ -93,7 +96,7 @@
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="1" DataContext="{Binding Player}">
 
             <Label ToolTip="Position">
                 <TextBlock>
@@ -110,31 +113,35 @@
                 <TextBlock Text="{Binding SpeedRatio, StringFormat={}{0:N2} x}"/>
             </Label>
 
-            <Button x:Name="Stop" Content="{fa:ToText Stop}" ToolTip="Stop" />
+            <Button cal:Message.Attach="Stop" 
+                 Content="{fa:ToText Stop}" ToolTip="Stop" />
 
             <StackPanel>
-                <Button x:Name="DecreaseSpeed"
+                <Button cal:Message.Attach="DecreaseSpeed"
                     Content="{fa:ToText AngleDoubleLeft}" ToolTip="Slower" />
 
-                <Button x:Name="Play"
+                <Button cal:Message.Attach="Play"
                     Content="{fa:ToText Play}" ToolTip="Play" Style="{StaticResource ProminentButton}"
                     Visibility="{Binding IsPlaying, Converter={StaticResource InverseBoolToVisible}}" />
 
-                <Button x:Name="Pause"
+                <Button cal:Message.Attach="Pause"
                     Content="{fa:ToText Pause}" ToolTip="Pause" Style="{StaticResource ProminentButton}"
                     Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisible}}" />
 
-                <Button x:Name="IncreaseSpeed" Content="{fa:ToText AngleDoubleRight}" ToolTip="Faster" />
+                <Button cal:Message.Attach="IncreaseSpeed" 
+                    Content="{fa:ToText AngleDoubleRight}" ToolTip="Faster" />
             </StackPanel>
 
             <StackPanel>
-                <Button x:Name="Mute" Content="{fa:ToText VolumeOff}" ToolTip="Mute" 
+                <Button cal:Message.Attach="Mute" 
+                    Content="{fa:ToText VolumeOff}" ToolTip="Mute" 
                     Visibility="{Binding CanMute, Converter={StaticResource BoolToVisible}}" />
-                <Button x:Name="UnMute"
+                <Button cal:Message.Attach="UnMute"
                     Content="{fa:ToText VolumeUp}" ToolTip="Unmute"
                     Visibility="{Binding CanMute, Converter={StaticResource InverseBoolToVisible}}" />
 
-                <mediaPlayer:FormattedSlider x:Name="Volume" VerticalAlignment="Center" MinWidth="95"
+                <local:FormattedSlider VerticalAlignment="Center" MinWidth="95"
+                    Value="{Binding Volume}"
                     Minimum="0" Maximum="1" 
                     TickFrequency="0.1" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
                     ToolTip="Volume"
@@ -143,7 +150,8 @@
 
             <StackPanel>
                 <TextBlock Text="L"/>
-                <mediaPlayer:FormattedSlider x:Name="Balance" VerticalAlignment="Center" MinWidth="95"
+                <local:FormattedSlider VerticalAlignment="Center" MinWidth="95"
+                    Value="{Binding Balance}"
                     Minimum="-1" Maximum="1" 
                     TickFrequency="0.1" IsSnapToTickEnabled="True" TickPlacement="BottomRight"
                     ToolTip="Balance"

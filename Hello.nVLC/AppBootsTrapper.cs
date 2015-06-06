@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Windows;
 using Autofac;
-using Autofac.Core;
 using Caliburn.Micro;
+using Caliburn.Micro.Autofac;
+using MediaPlayer;
 using MediaPlayer.Windows;
 
 namespace Hello.nVLC
 {
-    public class AppBootstrapper : BootstrapperBase
+    public class AppBootstrapper : AutofacBootstrapper<MainViewModel>
     {
-        private IContainer _container;
-
         public AppBootstrapper()
         {
             Initialize();
@@ -23,48 +19,26 @@ namespace Hello.nVLC
             DisplayRootViewFor<MainViewModel>();
         }
 
-        protected override void Configure()
+        protected override void ConfigureBootstrapper()
         {
-            var builder = new ContainerBuilder();
+            base.ConfigureBootstrapper();
+            EnforceNamespaceConvention = false;
+        }
 
-            builder.RegisterType<WindowManager>().As<IWindowManager>().SingleInstance();
+        protected override void ConfigureContainer(ContainerBuilder builder)
+        {
             builder.RegisterType<MainViewModel>().AsSelf().InstancePerLifetimeScope();
 
-            builder.RegisterModule<WindowsMediaPlayerModule>();
+            builder.RegisterType<MediaPlayerViewModel>().As<IMediaPlayerViewModel>().SingleInstance();
 
-            // uncomment to use Vlc
+            builder.RegisterModule<WindowsModule>();
+            AssemblySource.Instance.Add(typeof(WindowsModule).Assembly);
+
             //builder.RegisterModule<VlcModule>();
+            //AssemblySource.Instance.Add(typeof(VlcModule).Assembly);
 
-            _container = builder.Build();
-        }
-
-        protected override object GetInstance(Type service, string key)
-        {
-            if (service == null) throw new ArgumentNullException(nameof(service));
-
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                object result;
-                if (_container.TryResolve(service, out result))
-                    return result;
-            }
-            else
-            {
-                object result;
-                if (_container.TryResolveNamed(key, service, out result))
-                    return result;
-            }
-            throw new DependencyResolutionException(string.Format(CultureInfo.CurrentCulture, "Could not locate any instances of contract {0}.", key ?? service.Name));
-        }
-
-        protected override IEnumerable<object> GetAllInstances(Type service)
-        {
-            return _container.Resolve(typeof(IEnumerable<>).MakeGenericType(new[] { service })) as IEnumerable<object>;
-        }
-
-        protected override void BuildUp(object instance)
-        {
-            _container.InjectProperties(instance);
+            //builder.RegisterModule<NAudioModule>();
+            //AssemblySource.Instance.Add(typeof(NAudioModule).Assembly);
         }
     }
 }

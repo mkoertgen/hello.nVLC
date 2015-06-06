@@ -30,22 +30,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FontAwesome.Sharp, Version=4.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FontAwesome.Sharp.4.2.3.0\lib\FontAwesome.Sharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xaml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BooleanConverter.cs" />
-    <Compile Include="BooleanToVisibilityConverter.cs" />
-    <Compile Include="FormattedSlider.cs" />
     <Compile Include="IMediaDisplayViewModel.cs" />
     <Compile Include="IMediaPlayerViewModel.cs" />
     <Compile Include="IPlayerError.cs" />
@@ -53,25 +47,11 @@
     <Compile Include="MediaException.cs" />
     <Compile Include="MediaNotFoundException.cs" />
     <Compile Include="MediaPlayerExtensions.cs" />
-    <Compile Include="MediaPlayerViewModel.cs" />
     <Compile Include="NoMediaException.cs" />
     <Compile Include="PlayerError.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecondsToTimeConverter.cs" />
     <Compile Include="UriExtensions.cs" />
     <Compile Include="UriNotFoundException.cs" />
-    <Compile Include="MediaPlayerView.xaml.cs">
-      <DependentUpon>MediaPlayerView.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="MediaPlayerView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

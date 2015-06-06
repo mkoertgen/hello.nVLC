@@ -17,8 +17,6 @@ namespace MediaPlayer.Windows
         public double MaxSpeedRatio => MaxSpeedRatioInternal;
         public double MinSpeedRatio => MinSpeedRatioInternal;
 
-        public DrawingBrush VideoBrush { get; private set; }
-        
         private readonly System.Windows.Media.MediaPlayer _player = new System.Windows.Media.MediaPlayer();
         private readonly DispatcherTimer _positionTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
         private bool _isPlaying;
@@ -26,6 +24,8 @@ namespace MediaPlayer.Windows
         private bool _isStopped;
         private double _restoreVolume = 0.5;
         private double _speedRatio = 1.0;
+
+        public DrawingBrush VideoBrush { get; }
 
         public WindowsMediaPlayer()
         {
@@ -39,7 +39,7 @@ namespace MediaPlayer.Windows
 
             Error = PlayerError.NoError;
 
-            var videoDrawing = new VideoDrawing {Player = _player, Rect = new Rect(0, 0, 1, 1)};
+            var videoDrawing = new VideoDrawing { Player = _player, Rect = new Rect(0, 0, 1, 1) };
             VideoBrush = new DrawingBrush(videoDrawing);
         }
 
