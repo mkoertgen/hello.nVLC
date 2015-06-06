@@ -4,7 +4,7 @@ namespace MediaPlayer
 {
     public static class MediaPlayerExtensions
     {
-        public static void TogglePlayPause(this IPlayerViewModel player)
+        public static void TogglePlayPause(this IMediaPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.IsPlaying)
@@ -17,7 +17,7 @@ namespace MediaPlayer
             }
         }
 
-        public static void ToggleMute(this IPlayerViewModel player)
+        public static void ToggleMute(this IMediaPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.IsMuted)

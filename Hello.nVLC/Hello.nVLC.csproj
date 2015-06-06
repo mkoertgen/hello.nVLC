@@ -107,10 +107,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\CoreAudioApi\CoreAudioApi.csproj">
-      <Project>{923A3753-62DC-40BD-BCD8-01EA721CC4AC}</Project>
-      <Name>CoreAudioApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MediaPlayer.Vlc\MediaPlayer.Vlc.csproj">
       <Project>{821c47de-3f17-4e70-9f60-304cbd4f3f32}</Project>
       <Name>MediaPlayer.Vlc</Name>
