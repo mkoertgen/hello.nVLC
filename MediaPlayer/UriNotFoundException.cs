@@ -12,7 +12,7 @@ namespace MediaPlayer
             StatusCode = statusCode;
         }
 
-        public Uri Uri { get; private set; }
-        public HttpStatusCode StatusCode { get; private set; }
+        public Uri Uri { get; }
+        public HttpStatusCode StatusCode { get; }
     }
 }

@@ -18,7 +18,7 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
             <Button x:Name="OpenFile" Content="Open file..." />
-            <Button x:Name="OpenUrl" Content="Open URL..." />
+            <Button x:Name="OpenUrl" Content="Open URL (probably needs VLC)..." />
         </StackPanel>
     </Grid>
 </Window>

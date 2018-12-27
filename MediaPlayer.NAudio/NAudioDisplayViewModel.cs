@@ -9,8 +9,7 @@ namespace MediaPlayer.NAudio
 
         public NAudioDisplayViewModel(NAudioPlayer player)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            _player = player;
+            _player = player ?? throw new ArgumentNullException(nameof(player));
             _player.MaxVolume += OnMaxVolume;
         }
 

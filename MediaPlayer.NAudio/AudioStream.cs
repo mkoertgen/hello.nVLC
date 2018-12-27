@@ -44,7 +44,7 @@ namespace MediaPlayer.NAudio
         /// </summary>
         public override long Position
         {
-            get { return SourceToDest(_readerStream.Position); }
+            get => SourceToDest(_readerStream.Position);
             set
             {
                 lock (_lockObject)
@@ -59,14 +59,14 @@ namespace MediaPlayer.NAudio
         /// </summary>
         public float Volume
         {
-            get { return _readerStream.Volume; }
-            set { _readerStream.Volume = value; }
+            get => _readerStream.Volume;
+            set => _readerStream.Volume = value;
         }
 
         public float Pan
         {
-            get { return _readerStream.Pan; }
-            set { _readerStream.Pan = value; }
+            get => _readerStream.Pan;
+            set => _readerStream.Pan = value;
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace MediaPlayer.NAudio
         }
 
         /// <summary>
-        ///     Creates the reader stream, supporting all filetypes in the core NAudio library,
+        ///     Creates the reader stream, supporting all file types in the core NAudio library,
         ///     and ensuring we are in PCM format.
         /// </summary>
         /// <param name="source">Source uri</param>
@@ -105,7 +105,7 @@ namespace MediaPlayer.NAudio
 
         private static WaveStream CreateReaderStream(string fileName)
         {
-            var ext = Path.GetExtension(fileName).ToLowerInvariant();
+            var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
             switch (ext)
             {
                 case ".wav":
@@ -123,13 +123,10 @@ namespace MediaPlayer.NAudio
         private static WaveStream CreatePcmStream(string fileName)
         {
             WaveStream stream = new WaveFileReader(fileName);
-            if (stream.WaveFormat.Encoding != WaveFormatEncoding.Pcm &&
-                stream.WaveFormat.Encoding != WaveFormatEncoding.IeeeFloat)
-            {
-                stream = WaveFormatConversionStream.CreatePcmStream(stream);
-                stream = new BlockAlignReductionStream(stream);
-                return stream;
-            }
+            if (stream.WaveFormat.Encoding == WaveFormatEncoding.Pcm ||
+                stream.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat) return stream;
+            stream = WaveFormatConversionStream.CreatePcmStream(stream);
+            stream = new BlockAlignReductionStream(stream);
             return stream;
         }
 

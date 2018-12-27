@@ -94,7 +94,7 @@ namespace MediaPlayer.Vlc
         private TimeSpan OpenTimeOut { get; }
 
         /// <summary>
-        ///     used to make he player for testing syncronously
+        ///     used to make he player for testing synchronously
         /// </summary>
         internal bool Async { private get; set; }
 
@@ -135,14 +135,14 @@ namespace MediaPlayer.Vlc
 
         public Uri Source
         {
-            get { return _source; }
+            get => _source;
             set
             {
                 try
                 {
                     Open(value);
 
-                    // change souce if there are no exceptions during open
+                    // change source if there are no exceptions during open
                     _source = value;
 
                     OnPropertyChanged();
@@ -172,7 +172,7 @@ namespace MediaPlayer.Vlc
         /// </summary>
         public double Duration
         {
-            get { return _duration; }
+            get => _duration;
             set
             {
                 if (CloseTo(_duration, value, TimeEps)) return;
@@ -189,7 +189,7 @@ namespace MediaPlayer.Vlc
         /// </summary>
         public double Position
         {
-            get { return _position; }
+            get => _position;
             set
             {
                 // when playing this raises PositionChanged
@@ -207,7 +207,7 @@ namespace MediaPlayer.Vlc
         /// <summary>
         ///     volume between 0 and 1.
         /// </summary>
-        /// <remarks>internally the volume is an integer between 0 and 100 (pecent)</remarks>
+        /// <remarks>internally the volume is an integer between 0 and 100 (percent)</remarks>
         public double Volume
         {
             get
@@ -262,8 +262,8 @@ namespace MediaPlayer.Vlc
 
         public IntPtr WindowHandle
         {
-            get { return _player.WindowHandle; }
-            set { _player.WindowHandle = value; }
+            get => _player.WindowHandle;
+            set => _player.WindowHandle = value;
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace MediaPlayer.Vlc
         /// <remarks>this needs video player</remarks>
         public double Rate
         {
-            get { return _rate; }
+            get => _rate;
             set
             {
                 var newValue = Math.Max(MinRate, Math.Min(MaxRate, value));
@@ -323,19 +323,19 @@ namespace MediaPlayer.Vlc
 
                 var waitHandle = new AutoResetEvent(false);
                 // ReSharper disable once AccessToDisposedClosure
-                EventHandler eventHandler = (sender, e) => waitHandle.Set();
+                void EventHandler(object sender, EventArgs e) => waitHandle.Set();
 
                 // register on stop, execute STOP and wait for finish
-                _player.Events.PlayerStopped += eventHandler;
+                _player.Events.PlayerStopped += EventHandler;
                 _player.Stop();
                 waitHandle.WaitOne(1000);
-                _player.Events.PlayerStopped -= eventHandler;
+                _player.Events.PlayerStopped -= EventHandler;
 
                 // register on play, execute PLAY and wait for finish
-                _player.Events.PlayerPlaying += eventHandler;
+                _player.Events.PlayerPlaying += EventHandler;
                 _player.Play();
                 waitHandle.WaitOne(1000);
-                _player.Events.PlayerPlaying -= eventHandler;
+                _player.Events.PlayerPlaying -= EventHandler;
 
                 // now we set the position so nothing is going to change this afterwards asynchronously
                 Position = currentPosition;

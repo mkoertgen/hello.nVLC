@@ -8,14 +8,13 @@ namespace MediaPlayer.Vlc
 
         public VlcDisplayViewModel(VlcPlayer player)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            _player = player;
+            _player = player ?? throw new ArgumentNullException(nameof(player));
         }
 
         public IntPtr WindowHandle
         {
-            get { return _player.WindowHandle; }
-            set { _player.WindowHandle = value; }
+            get => _player.WindowHandle;
+            set => _player.WindowHandle = value;
         }
     }
 }

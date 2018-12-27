@@ -12,8 +12,7 @@ namespace Hello.nVLC
     {
         public MainViewModel(IMediaPlayerViewModel player)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            Player = player;
+            Player = player ?? throw new ArgumentNullException(nameof(player));
 
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DisplayName = "hello.nVLC";
@@ -34,7 +33,7 @@ namespace Hello.nVLC
         public void OpenUrl()
         {
             var url = Interaction.InputBox("Url", "Open Url",
-                "https://archive.org/download/Windows7WildlifeSampleVideo/Wildlife_512kb.mp4");
+                "https://archive.org/download/Wildlife_20160527/Wildlife.mp4");
             if (!string.IsNullOrEmpty(url))
                 OpenUrl(url);
         }

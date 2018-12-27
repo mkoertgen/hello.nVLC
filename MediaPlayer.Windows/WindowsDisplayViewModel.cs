@@ -11,6 +11,6 @@ namespace MediaPlayer.Windows
             VideoBrush = player.VideoBrush;
         }
 
-        public DrawingBrush VideoBrush { get; private set; }
+        public DrawingBrush VideoBrush { get; }
     }
 }

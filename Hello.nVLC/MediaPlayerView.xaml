@@ -30,7 +30,6 @@
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="FontFamily" Value="/FontAwesome.Sharp;component/fonts/#FontAwesome" />
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="28" />
             <Setter Property="FontSize" Value="14" />
@@ -118,33 +117,61 @@
             </Label>
 
             <Button cal:Message.Attach="Stop"
-                    Content="{fa:ToText Stop}" ToolTip="Stop" />
+                    ToolTip="Stop">
+                <Button.Content>
+                    <fa:IconBlock Icon="Stop"/>
+                </Button.Content>
+            </Button>
 
             <StackPanel>
                 <Button cal:Message.Attach="Slower"
-                        Visibility="{Binding SupportsRate, Converter={StaticResource BoolToVisible}}"
-                        Content="{fa:ToText AngleDoubleLeft}" ToolTip="Slower" />
+                        ToolTip="Slower"
+                        Visibility="{Binding SupportsRate, Converter={StaticResource BoolToVisible}}">
+                    <Button.Content>
+                        <fa:IconBlock Icon="AngleDoubleLeft"/>
+                    </Button.Content>
+                </Button>
 
                 <Button cal:Message.Attach="Play"
-                        Content="{fa:ToText Play}" ToolTip="Play" Style="{StaticResource ProminentButton}"
-                        Visibility="{Binding IsPlaying, Converter={StaticResource InverseBoolToVisible}}" />
+                        ToolTip="Play" Style="{StaticResource ProminentButton}"
+                        Visibility="{Binding IsPlaying, Converter={StaticResource InverseBoolToVisible}}">
+                    <Button.Content>
+                        <fa:IconBlock Icon="Play"/>
+                    </Button.Content>
+                </Button>
+
 
                 <Button cal:Message.Attach="Pause"
-                        Content="{fa:ToText Pause}" ToolTip="Pause" Style="{StaticResource ProminentButton}"
-                        Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisible}}" />
+                        ToolTip="Pause" Style="{StaticResource ProminentButton}"
+                        Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisible}}">
+                    <Button.Content>
+                        <fa:IconBlock Icon="Pause"/>
+                    </Button.Content>
+                </Button>
 
                 <Button cal:Message.Attach="Faster"
                         Visibility="{Binding SupportsRate, Converter={StaticResource BoolToVisible}}"
-                        Content="{fa:ToText AngleDoubleRight}" ToolTip="Faster" />
+                        ToolTip="Faster">
+                    <Button.Content>
+                        <fa:IconBlock Icon="AngleDoubleRight"/>
+                    </Button.Content>
+                </Button>
             </StackPanel>
 
             <StackPanel>
                 <Button cal:Message.Attach="Mute"
-                        Content="{fa:ToText VolumeOff}" ToolTip="Mute"
-                        Visibility="{Binding CanMute, Converter={StaticResource BoolToVisible}}" />
-                <Button cal:Message.Attach="UnMute"
-                        Content="{fa:ToText VolumeUp}" ToolTip="Unmute"
-                        Visibility="{Binding CanMute, Converter={StaticResource InverseBoolToVisible}}" />
+                        ToolTip="Mute"
+                        Visibility="{Binding CanMute, Converter={StaticResource BoolToVisible}}">
+                    <Button.Content>
+                        <fa:IconBlock Icon="VolumeOff"/>
+                    </Button.Content>
+                </Button>
+                <Button cal:Message.Attach="UnMute" ToolTip="Unmute"
+                        Visibility="{Binding CanMute, Converter={StaticResource InverseBoolToVisible}}">
+                    <Button.Content>
+                        <fa:IconBlock Icon="VolumeUp"/>
+                    </Button.Content>
+                </Button>
 
                 <local:FormattedSlider VerticalAlignment="Center" MinWidth="95"
                                        Value="{Binding Volume}"

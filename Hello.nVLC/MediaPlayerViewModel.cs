@@ -6,10 +6,8 @@ namespace MediaPlayer
     {
         public MediaPlayerViewModel(IMediaPlayer player, IMediaDisplayViewModel display)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            if (display == null) throw new ArgumentNullException(nameof(display));
-            Player = player;
-            Display = display;
+            Player = player ?? throw new ArgumentNullException(nameof(player));
+            Display = display ?? throw new ArgumentNullException(nameof(display));
         }
 
         public IMediaPlayer Player { get; }

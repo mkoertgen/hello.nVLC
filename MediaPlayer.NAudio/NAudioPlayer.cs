@@ -31,7 +31,7 @@ namespace MediaPlayer.NAudio
         public NAudioPlayer(IWavePlayer wavePlayer = null)
         {
             // as a default player DirectSoundOut seems to be the least problematic,
-            //  - WaveOut may stutter if doing parallel work on the UI thread since it is UI-synchronuous
+            //  - WaveOut may stutter if doing parallel work on the UI thread since it is UI-synchronous
             //  - WaveOutEvent seems to have problems on Dispose (NullReference on CloseWaveOut)
             // see also: http://mark-dot-net.blogspot.de/2011/05/naudio-audio-output-devices.html
             _player = wavePlayer ?? new DirectSoundOut(200);
@@ -62,7 +62,7 @@ namespace MediaPlayer.NAudio
 
         public bool IsPlaying
         {
-            get { return _isPlaying; }
+            get => _isPlaying;
             private set
             {
                 if (_isPlaying == value) return;
@@ -86,7 +86,7 @@ namespace MediaPlayer.NAudio
 
         public bool IsPaused
         {
-            get { return _isPaused; }
+            get => _isPaused;
             private set
             {
                 _isPaused = value;
@@ -111,7 +111,7 @@ namespace MediaPlayer.NAudio
 
         public bool IsStopped
         {
-            get { return _isStopped; }
+            get => _isStopped;
             private set
             {
                 _isStopped = value;
@@ -138,7 +138,7 @@ namespace MediaPlayer.NAudio
 
         public Uri Source
         {
-            get { return _source; }
+            get => _source;
             set
             {
                 DisposeMedia();
@@ -163,7 +163,7 @@ namespace MediaPlayer.NAudio
 
         public double Position
         {
-            get { return _waveProvider?.CurrentTime.TotalSeconds ?? 0.0; }
+            get => _waveProvider?.CurrentTime.TotalSeconds ?? 0.0;
             set
             {
                 if (_waveProvider == null) return;
@@ -196,7 +196,7 @@ namespace MediaPlayer.NAudio
 
         public double Rate
         {
-            get { return 1.0; }
+            get => 1.0;
             set
             {
                 // todo: not builtin to NAudio, use SoundTouch like Practice#, cf.: https://soundtouchdotnet.codeplex.com/
@@ -205,7 +205,7 @@ namespace MediaPlayer.NAudio
 
         public double Volume
         {
-            get { return _waveProvider?.Volume ?? DefaultVolume; }
+            get => _waveProvider?.Volume ?? DefaultVolume;
             set
             {
                 if (_waveProvider == null) return;
@@ -223,7 +223,7 @@ namespace MediaPlayer.NAudio
 
         public double Balance
         {
-            get { return _waveProvider?.Pan ?? 0.0; }
+            get => _waveProvider?.Pan ?? 0.0;
             set
             {
                 if (_waveProvider == null) return;
