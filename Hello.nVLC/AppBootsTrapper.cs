@@ -1,7 +1,7 @@
 using System.Windows;
 using Autofac;
 using Caliburn.Micro.Autofac;
-using MediaPlayer;
+using Hello.nVLC.Modules;
 
 namespace Hello.nVLC
 {
@@ -26,11 +26,10 @@ namespace Hello.nVLC
         protected override void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterType<MainViewModel>().AsSelf().InstancePerLifetimeScope();
-            builder.RegisterType<MediaPlayerViewModel>().As<IMediaPlayerViewModel>().SingleInstance();
 
             builder.RegisterModule<WindowsModule>();
-            //builder.RegisterModule<VlcModule>();
-            //builder.RegisterModule<NAudioModule>();
+            builder.RegisterModule<NAudioModule>();
+            builder.RegisterModule<VlcModule>();
         }
     }
 }

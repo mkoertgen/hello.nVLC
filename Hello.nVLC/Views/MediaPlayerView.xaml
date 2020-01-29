@@ -1,12 +1,11 @@
-﻿<UserControl x:Class="MediaPlayer.MediaPlayerView"
+<UserControl x:Class="Hello.nVLC.MediaPlayerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:local="clr-namespace:MediaPlayer"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:nVlc="clr-namespace:Hello.nVLC"
+             xmlns:local="clr-namespace:Hello.nVLC"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance local:MediaPlayerViewModel}">
     <UserControl.Resources>
@@ -58,7 +57,7 @@
             <Setter Property="Margin" Value="4" />
         </Style>
 
-        <nVlc:SecondsToTimeConverter x:Key="SecondsToTime" />
+        <local:SecondsToTimeConverter x:Key="SecondsToTime" />
     </UserControl.Resources>
 
     <Grid>
@@ -166,7 +165,7 @@
                         <fa:IconBlock Icon="VolumeOff"/>
                     </Button.Content>
                 </Button>
-                <Button cal:Message.Attach="UnMute" ToolTip="Unmute"
+                <Button cal:Message.Attach="UnMute" ToolTip="UnMute"
                         Visibility="{Binding CanMute, Converter={StaticResource InverseBoolToVisible}}">
                     <Button.Content>
                         <fa:IconBlock Icon="VolumeUp"/>

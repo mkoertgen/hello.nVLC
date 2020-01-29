@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace MediaPlayer
@@ -6,7 +6,7 @@ namespace MediaPlayer
     public interface IPlayerError : INotifyPropertyChanged
     {
         /// <summary>Gets the error exception.</summary>
-        /// <returns>The error exception on error; null if no erorr.</returns>
+        /// <returns>The error exception on error; null if no error.</returns>
         Exception Exception { get; set; }
 
         /// <summary>Gets a value that indicating whether this instance has an exception.</summary>

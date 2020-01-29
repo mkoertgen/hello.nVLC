@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -22,9 +22,12 @@ namespace MediaPlayer.Vlc
         private string _libVlcVersion;
         private bool _vlcChecked;
 
+        public Lazy<bool> IsVlcPresent { get; }
+
         public VlcConfiguration(string homePath = null)
         {
             _homePath = homePath ?? GetDefaultHomePath();
+            IsVlcPresent = new Lazy<bool>(InitVlc);
         }
 
         private string LibVlcVersion
@@ -39,48 +42,48 @@ namespace MediaPlayer.Vlc
             }
         }
 
-        private bool IsVlcPresent { get; set; }
-
         public void VerifyVlcPresent()
         {
-            if (!_vlcChecked)
-                CheckVlc();
-
-            if (!IsVlcPresent)
+            if (!IsVlcPresent.Value)
                 throw new InvalidOperationException("Cannot find VLC directory.");
         }
 
-        private void CheckVlc()
+        private bool InitVlc()
         {
             var vlcPath = Path.Combine(_homePath, "vlc");
             var nativePath = Path.Combine(vlcPath, GetPlatform());
 
-            IsVlcPresent = Directory.Exists(nativePath);
-            if (!IsVlcPresent)
+            var isVlcPresent = Directory.Exists(nativePath);
+            if (!isVlcPresent)
             {
                 Trace.TraceWarning("Cannot find VLC directory.");
-                return;
+                return false;
             }
 
-            // Prepend native path to environment path, to ensure the right libs are being used.
-            var path = Environment.GetEnvironmentVariable("PATH");
-            path = string.Concat(nativePath, ";", path);
-            Environment.SetEnvironmentVariable("PATH", path);
+            if (!_vlcChecked)
+            {
+                // Prepend native path to environment path, to ensure the right libs are being used.
+                var path = Environment.GetEnvironmentVariable("PATH");
+                path = string.Concat(nativePath, ";", path);
+                Environment.SetEnvironmentVariable("PATH", path);
 
-            Trace.TraceInformation("Using VLC {0} {1} from {2}",
-                LibVlcVersion, Environment.Is64BitProcess ? "x64" : "x86", nativePath);
+                Trace.TraceInformation("Using VLC {0} {1} from {2}",
+                    LibVlcVersion, Environment.Is64BitProcess ? "x64" : "x86", nativePath);
+            }
 
             _vlcChecked = true;
+            return true;
         }
 
         private static string GetDefaultHomePath()
         {
             var homePath = GetSafeEnv("VLC_HOME");
-            if (string.IsNullOrWhiteSpace(homePath))
-            {
-                var executingAssemblyFile = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath;
-                homePath = Path.GetDirectoryName(executingAssemblyFile);
-            }
+            if (!string.IsNullOrWhiteSpace(homePath))
+                return homePath;
+
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+            var executingAssemblyFile = new Uri(assembly.GetName().CodeBase).LocalPath;
+            homePath = Path.GetDirectoryName(executingAssemblyFile);
             return homePath;
         }
 
@@ -94,9 +97,9 @@ namespace MediaPlayer.Vlc
             var value = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrWhiteSpace(value))
             {
-                value = (string) Registry.GetValue(UserEnvRegKey, envVar, null);
+                value = (string)Registry.GetValue(UserEnvRegKey, envVar, null);
                 if (string.IsNullOrWhiteSpace(value))
-                    value = (string) Registry.GetValue(SystemEnvRegKey, envVar, null);
+                    value = (string)Registry.GetValue(SystemEnvRegKey, envVar, null);
             }
             return value ?? string.Empty;
         }

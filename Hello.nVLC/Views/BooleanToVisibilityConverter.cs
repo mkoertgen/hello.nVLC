@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace MediaPlayer
+namespace Hello.nVLC
 {
     public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
     {

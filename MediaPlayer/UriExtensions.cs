@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -11,13 +11,12 @@ namespace MediaPlayer
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            if (uri.IsFile)
-            {
-                var fileName = uri.LocalPath;
-                if (verifyAccess) VerifyFileExists(fileName);
-                return fileName;
-            }
-            return string.Empty;
+            if (!uri.IsFile)
+                return string.Empty;
+
+            var fileName = uri.LocalPath;
+            if (verifyAccess) VerifyFileExists(fileName);
+            return fileName;
         }
 
         public static void VerifyUriExists(this Uri uri, TimeSpan timeOut)

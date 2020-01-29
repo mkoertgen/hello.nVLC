@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace MediaPlayer
+namespace Hello.nVLC
 {
     /// <summary>
     ///     A Slider which provides a way to modify the

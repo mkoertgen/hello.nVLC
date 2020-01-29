@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace MediaPlayer
+namespace Hello.nVLC
 {
     public class BooleanConverter<T> : IValueConverter
     {

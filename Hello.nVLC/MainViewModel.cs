@@ -1,54 +1,41 @@
-using System;
-using System.Diagnostics;
-using System.Windows;
+using System.Collections.Generic;
+using System.Linq;
 using Caliburn.Micro;
-using MediaPlayer;
-using Microsoft.VisualBasic;
-using Microsoft.Win32;
 
 namespace Hello.nVLC
 {
-    public class MainViewModel : Screen
+    public class MainViewModel : Conductor<PlayerTabViewModel>.Collection.OneActive
     {
-        public MainViewModel(IMediaPlayerViewModel player)
-        {
-            Player = player ?? throw new ArgumentNullException(nameof(player));
+        private bool _pauseOnSwitch;
 
-            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DisplayName = "hello.nVLC";
+        public MainViewModel(IEnumerable<IMediaPlayerViewModel> players)
+        {
+            Items.AddRange(players.Select(ToTab));
+            ActiveItem = Items.FirstOrDefault();
+
+            // ReSharper disable once VirtualMemberCallInConstructor
+            DisplayName = typeof(MainViewModel).Assembly.GetName().Name;
         }
-
-        public IMediaPlayerViewModel Player { get; }
-        // ReSharper disable once UnusedMember.Global
-        public void OpenFile()
+        public bool PauseOnSwitch
         {
-            var dlg = new OpenFileDialog();
-            var res = dlg.ShowDialog();
-
-            if (res.HasValue && res.Value)
-                OpenUrl(dlg.FileName);
-        }
-
-        // ReSharper disable once UnusedMember.Global
-        public void OpenUrl()
-        {
-            var url = Interaction.InputBox("Url", "Open Url",
-                "https://archive.org/download/Wildlife_20160527/Wildlife.mp4");
-            if (!string.IsNullOrEmpty(url))
-                OpenUrl(url);
-        }
-
-        private void OpenUrl(string url)
-        {
-            try
+            get => _pauseOnSwitch;
+            set
             {
-                Player.Player.Source = new Uri(url);
+                if (value == _pauseOnSwitch) return;
+                _pauseOnSwitch = value;
+                NotifyOfPropertyChange();
             }
-            catch (Exception ex)
-            {
-                Trace.TraceWarning("Could not open url: {0}", ex);
-                MessageBox.Show("Could not open url: " + ex.Message);
-            }
+        }
+
+        protected override void ChangeActiveItem(PlayerTabViewModel newItem, bool closePrevious)
+        {
+            if (PauseOnSwitch) ActiveItem?.Player.Player.Pause();
+            base.ChangeActiveItem(newItem, closePrevious);
+        }
+
+        private static PlayerTabViewModel ToTab(IMediaPlayerViewModel player)
+        {
+            return new PlayerTabViewModel(player);
         }
     }
 }

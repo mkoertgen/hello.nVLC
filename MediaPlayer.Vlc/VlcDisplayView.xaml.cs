@@ -1,8 +1,9 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MediaPlayer.Vlc
 {
+    // ReSharper disable once UnusedMember.Global
     public partial class VlcDisplayView
     {
         public VlcDisplayView()
@@ -14,8 +15,7 @@ namespace MediaPlayer.Vlc
 
             Loaded += (sender, args) =>
             {
-                var viewModel = DataContext as VlcDisplayViewModel;
-                if (viewModel != null) viewModel.WindowHandle = panel.Handle;
+                if (DataContext is VlcDisplayViewModel viewModel) viewModel.WindowHandle = panel.Handle;
             };
         }
     }

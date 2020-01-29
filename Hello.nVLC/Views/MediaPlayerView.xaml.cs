@@ -1,4 +1,4 @@
-﻿namespace MediaPlayer
+namespace Hello.nVLC
 {
     public partial class MediaPlayerView
     {

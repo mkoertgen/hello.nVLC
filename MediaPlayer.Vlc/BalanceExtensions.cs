@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NAudio.CoreAudioApi;
 
 namespace MediaPlayer.Vlc
@@ -11,8 +11,8 @@ namespace MediaPlayer.Vlc
 
         public static MMDevice GetDefaultDevice()
         {
-            return _device ?? (_device = new MMDeviceEnumerator()
-                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+            return _device ??= new MMDeviceEnumerator()
+                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
         }
 
         public static float GetBalance(this AudioEndpointVolume volume)

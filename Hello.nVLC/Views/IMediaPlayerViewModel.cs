@@ -1,4 +1,6 @@
-﻿namespace MediaPlayer
+using MediaPlayer;
+
+namespace Hello.nVLC
 {
     public interface IMediaPlayerViewModel
     {

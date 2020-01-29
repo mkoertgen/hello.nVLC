@@ -1,6 +1,7 @@
-﻿using System;
+using System;
+using MediaPlayer;
 
-namespace MediaPlayer
+namespace Hello.nVLC
 {
     public class MediaPlayerViewModel : IMediaPlayerViewModel
     {
@@ -12,5 +13,14 @@ namespace MediaPlayer
 
         public IMediaPlayer Player { get; }
         public IMediaDisplayViewModel Display { get; }
+    }
+
+    public class MediaPlayerViewModel<TPlayer, TDisplay> : MediaPlayerViewModel
+        where TPlayer : IMediaPlayer
+        where TDisplay : IMediaDisplayViewModel
+    {
+        public MediaPlayerViewModel(TPlayer player, TDisplay display) : base(player, display)
+        {
+        }
     }
 }

@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hello.nVLC", "Hello.nVLC\Hello.nVLC.csproj", "{66E48FB0-D72D-4125-A429-283281D17A16}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AB0CB739-6E2A-45EE-85E3-71E5A965A94D}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		hello.nVLC.png = hello.nVLC.png
+		Hello.nVLC.v2.ncrunchsolution = Hello.nVLC.v2.ncrunchsolution
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -48,5 +52,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B1E412D-D6E3-4DFD-8525-CC372596EEB8}
 	EndGlobalSection
 EndGlobal
