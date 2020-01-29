@@ -14,9 +14,6 @@ namespace Hello.nVLC.Modules
             builder.RegisterType<VlcPlayer>().AsSelf().SingleInstance();
             builder.RegisterType<VlcDisplayViewModel>().AsSelf();
 
-            // TODO: ...
-            builder.RegisterInstance(VlcPlayer.GetVolumeEndpoint()).SingleInstance();
-
             AssemblySource.Instance.Add(typeof (VlcDisplayViewModel).Assembly);
             builder.RegisterType<MediaPlayerViewModel<VlcPlayer, VlcDisplayViewModel>>()
                 .As<IMediaPlayerViewModel>();

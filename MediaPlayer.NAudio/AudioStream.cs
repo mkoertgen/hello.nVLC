@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -97,10 +97,10 @@ namespace MediaPlayer.NAudio
         protected virtual WaveStream CreateReaderStream(Uri source)
         {
             var fileName = source.GetFileName(true);
-            if (!string.IsNullOrEmpty(fileName))
-                return CreateReaderStream(fileName);
             // for remote uris fall back to media foundation reader, see if that can play it
-            return new MediaFoundationReader(source.ToString());
+            return !string.IsNullOrEmpty(fileName)
+                ? CreateReaderStream(fileName)
+                : new MediaFoundationReader(source.ToString());
         }
 
         private static WaveStream CreateReaderStream(string fileName)

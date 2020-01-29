@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -43,7 +43,7 @@ namespace MediaPlayer.Vlc
             // create the player using the injected factory
             _factory = factory ?? new MediaPlayerFactory();
             _player = _factory.CreatePlayer<IVideoPlayer>();
-            _audioEndpointVolume = audioEndpointVolume;
+            _audioEndpointVolume = audioEndpointVolume ?? BalanceExtensions.GetDefaultDevice().AudioEndpointVolume;
 
             // set default values
             OpenTimeOut = TimeSpan.FromSeconds(10);
@@ -69,13 +69,6 @@ namespace MediaPlayer.Vlc
         public double MaxRate => 4;
         public double MinRate => 0.25;
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public static AudioEndpointVolume GetVolumeEndpoint()
-        {
-            return new MMDeviceEnumerator()
-                .GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
-                .AudioEndpointVolume;
-        }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

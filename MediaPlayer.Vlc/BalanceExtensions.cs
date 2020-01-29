@@ -41,12 +41,6 @@ namespace MediaPlayer.Vlc
             volume.Channels[RightChan].VolumeLevelScalar = rightVol*masterVol;
         }
 
-        public static AudioEndpointVolume GetDefaultVolumeEndpoint()
-        {
-            return GetDefaultDevice()
-                .AudioEndpointVolume;
-        }
-
         private static void VerifyChannels(AudioEndpointVolume volume)
         {
             if (volume == null) throw new ArgumentNullException(nameof(volume));
